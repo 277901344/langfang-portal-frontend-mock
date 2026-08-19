@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.tradeorder.TradeOrderMapper">
+
+    <resultMap id="TradeOrderEntityMap" type="com.zhzj.trading.model.tradeorder.TradeOrderEntity">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_title" property="orderTitle"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="demand_id" property="demandId"/>
+        <result column="demand_no" property="demandNo"/>
+        <result column="response_id" property="responseId"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="commodity_id" property="commodityId"/>
+        <result column="product_id" property="productId"/>
+        <result column="version_id" property="versionId"/>
+        <result column="commodity_name" property="commodityName"/>
+        <result column="commodity_type" property="commodityType"/>
+        <result column="delivery_type" property="deliveryType"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="buyer_name" property="buyerName"/>
+        <result column="buyer_user_identity_code" property="buyerUserIdentityCode"/>
+        <result column="buyer_subject_name" property="buyerSubjectName"/>
+        <result column="seller_id" property="sellerId"/>
+        <result column="seller_name" property="sellerName"/>
+        <result column="seller_user_identity_code" property="sellerUserIdentityCode"/>
+        <result column="seller_subject_name" property="sellerSubjectName"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="quoted_price" property="quotedPrice"/>
+        <result column="pricing_model" property="pricingModel"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="quantity" property="quantity"/>
+        <result column="free_quota" property="freeQuota"/>
+        <result column="estimated_amount" property="estimatedAmount"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="confirmed_at" property="confirmedAt"/>
+        <result column="completed_at" property="completedAt"/>
+        <result column="fulfillment_status" property="fulfillmentStatus"/>
+        <result column="fulfillment_expire_at" property="fulfillmentExpireAt"/>
+        <result column="payment_status" property="paymentStatus"/>
+        <result column="paid_amount" property="paidAmount"/>
+        <result column="paid_at" property="paidAt"/>
+        <result column="debit_flow_id" property="debitFlowId"/>
+        <result column="income_flow_id" property="incomeFlowId"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <resultMap id="TradeOrderListItemMap" type="com.zhzj.trading.model.tradeorder.TradeOrderListItem">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_title" property="orderTitle"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="demand_id" property="demandId"/>
+        <result column="demand_no" property="demandNo"/>
+        <result column="response_id" property="responseId"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="commodity_id" property="commodityId"/>
+        <result column="product_id" property="productId"/>
+        <result column="version_id" property="versionId"/>
+        <result column="commodity_name" property="commodityName"/>
+        <result column="commodity_type" property="commodityType"/>
+        <result column="delivery_type" property="deliveryType"/>
+        <result column="buyer_id" property="buyerId"/>
+        <result column="buyer_name" property="buyerName"/>
+        <result column="buyer_user_identity_code" property="buyerUserIdentityCode"/>
+        <result column="buyer_subject_name" property="buyerSubjectName"/>
+        <result column="seller_id" property="sellerId"/>
+        <result column="seller_name" property="sellerName"/>
+        <result column="seller_user_identity_code" property="sellerUserIdentityCode"/>
+        <result column="seller_subject_name" property="sellerSubjectName"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="quoted_price" property="quotedPrice"/>
+        <result column="pricing_model" property="pricingModel"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="quantity" property="quantity"/>
+        <result column="free_quota" property="freeQuota"/>
+        <result column="estimated_amount" property="estimatedAmount"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="confirmed_at" property="confirmedAt"/>
+        <result column="completed_at" property="completedAt"/>
+        <result column="payment_status" property="paymentStatus"/>
+        <result column="paid_amount" property="paidAmount"/>
+        <result column="paid_at" property="paidAt"/>
+    </resultMap>
+
+    <resultMap id="TradeOrderDetailResponseMap" type="com.zhzj.trading.model.tradeorder.TradeOrderDetailResponse" extends="TradeOrderListItemMap">
+        <result column="remark" property="remark"/>
+        <result column="proposal" property="proposal"/>
+        <result column="contract_name" property="contractName"/>
+        <result column="debit_flow_id" property="debitFlowId"/>
+        <result column="income_flow_id" property="incomeFlowId"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id,
+        order_no,
+        order_title,
+        source_type,
+        source_id,
+        demand_id,
+        demand_no,
+        response_id,
+        contract_id,
+        commodity_id,
+        product_id,
+        version_id,
+        commodity_name,
+        commodity_type,
+        delivery_type,
+        buyer_id,
+        buyer_name,
+        buyer_user_identity_code,
+        buyer_subject_name,
+        seller_id,
+        seller_name,
+        seller_user_identity_code,
+        seller_subject_name,
+        connector_id,
+        quoted_price,
+        pricing_model,
+        unit_price,
+        quantity,
+        free_quota,
+        estimated_amount,
+        actual_amount,
+        status,
+        remark,
+        created_at,
+        updated_at,
+        confirmed_at,
+        completed_at,
+        fulfillment_status,
+        fulfillment_expire_at,
+        payment_status,
+        paid_amount,
+        paid_at,
+        debit_flow_id,
+        income_flow_id,
+        deleted
+    </sql>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.tradeorder.TradeOrderEntity">
+        insert into trading.trade_order (
+            <include refid="BaseColumns"/>
+        ) values (
+            #{id},
+            #{orderNo},
+            #{orderTitle},
+            #{sourceType},
+            #{sourceId},
+            #{demandId},
+            #{demandNo},
+            #{responseId},
+            #{contractId},
+            #{commodityId},
+            #{productId},
+            #{versionId},
+            #{commodityName},
+            #{commodityType},
+            #{deliveryType},
+            #{buyerId},
+            #{buyerName},
+            #{buyerUserIdentityCode},
+            #{buyerSubjectName},
+            #{sellerId},
+            #{sellerName},
+            #{sellerUserIdentityCode},
+            #{sellerSubjectName},
+            #{connectorId},
+            #{quotedPrice},
+            #{pricingModel},
+            #{unitPrice},
+            #{quantity},
+            #{freeQuota},
+            #{estimatedAmount},
+            #{actualAmount},
+            #{status},
+            #{remark},
+            #{createdAt},
+            #{updatedAt},
+            #{confirmedAt},
+            #{completedAt},
+            #{fulfillmentStatus},
+            #{fulfillmentExpireAt},
+            #{paymentStatus},
+            #{paidAmount},
+            #{paidAt},
+            #{debitFlowId},
+            #{incomeFlowId},
+            #{deleted}
+        )
+    </insert>
+
+    <select id="countByOrderNoPrefix" resultType="int">
+        select count(1)
+        from trading.trade_order
+        where order_no like concat(#{prefix}, '%')
+    </select>
+
+    <select id="selectById" resultMap="TradeOrderEntityMap">
+        select <include refid="BaseColumns"/>
+        from trading.trade_order
+        where id = #{id}
+          and deleted = 0
+    </select>
+
+    <select id="selectByResponseId" resultMap="TradeOrderEntityMap">
+        select <include refid="BaseColumns"/>
+        from trading.trade_order
+        where response_id = #{responseId}
+          and deleted = 0
+    </select>
+
+    <select id="countList" resultType="int">
+        select count(1)
+        from trading.trade_order
+        where deleted = 0
+        <include refid="VisibilityFilters"/>
+        <include refid="QueryFilters"/>
+    </select>
+
+    <select id="selectList" resultMap="TradeOrderListItemMap">
+        select id,
+               order_no,
+               order_title,
+               source_type,
+               demand_id,
+               demand_no,
+               response_id,
+               contract_id,
+               commodity_id,
+               product_id,
+               version_id,
+               commodity_name,
+               commodity_type,
+               delivery_type,
+               buyer_id,
+               buyer_name,
+               buyer_user_identity_code,
+               buyer_subject_name,
+               seller_id,
+               seller_name,
+               seller_user_identity_code,
+               seller_subject_name,
+               connector_id,
+               quoted_price,
+               pricing_model,
+               unit_price,
+               quantity,
+               free_quota,
+               estimated_amount,
+               actual_amount,
+               status,
+               created_at,
+               updated_at,
+               confirmed_at,
+               completed_at,
+               payment_status,
+               paid_amount,
+               paid_at
+        from trading.trade_order
+        where deleted = 0
+        <include refid="VisibilityFilters"/>
+        <include refid="QueryFilters"/>
+        order by created_at desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="selectDetailById" resultMap="TradeOrderDetailResponseMap">
+        select o.id,
+               o.order_no,
+               o.order_title,
+               o.source_type,
+               o.demand_id,
+               o.demand_no,
+               o.response_id,
+               o.contract_id,
+               o.commodity_id,
+               o.product_id,
+               o.version_id,
+               o.commodity_name,
+               o.commodity_type,
+               o.delivery_type,
+               o.buyer_id,
+               o.buyer_name,
+               o.buyer_user_identity_code,
+               o.buyer_subject_name,
+               o.seller_id,
+               o.seller_name,
+               o.seller_user_identity_code,
+               o.seller_subject_name,
+               o.connector_id,
+               o.quoted_price,
+               o.pricing_model,
+               o.unit_price,
+               o.quantity,
+               o.free_quota,
+               o.estimated_amount,
+               o.actual_amount,
+               o.status,
+               o.created_at,
+               o.updated_at,
+               o.confirmed_at,
+               o.completed_at,
+               o.payment_status,
+               o.paid_amount,
+               o.paid_at,
+               c.contract_name,
+               o.remark,
+               o.debit_flow_id,
+               o.income_flow_id,
+               r.proposal
+        from trading.trade_order o
+        left join trading.demand_response r on r.id = o.response_id
+        left join sp.contract c on c.contract_id = o.contract_id
+        where o.id = #{id}
+          and o.deleted = 0
+    </select>
+
+    <update id="updateStatusSnapshot">
+        update trading.trade_order
+        <set>
+            status = #{toStatus},
+            updated_at = #{updatedAt},
+            <if test="confirmedAt != null">
+                confirmed_at = #{confirmedAt},
+            </if>
+            <if test="completedAt != null">
+                completed_at = #{completedAt},
+            </if>
+            <if test="fulfillmentExpireAt != null">
+                fulfillment_expire_at = #{fulfillmentExpireAt},
+            </if>
+            <if test="actualAmount != null">
+                actual_amount = #{actualAmount},
+            </if>
+        </set>
+        where id = #{id}
+          and status = #{fromStatus}
+          and deleted = 0
+    </update>
+
+    <update id="updateCompletionSnapshot">
+        update trading.trade_order
+        set status = #{toStatus},
+            updated_at = #{updatedAt},
+            completed_at = #{completedAt},
+            actual_amount = #{actualAmount},
+            payment_status = #{paymentStatus},
+            paid_amount = #{paidAmount},
+            paid_at = #{paidAt},
+            debit_flow_id = #{debitFlowId},
+            income_flow_id = #{incomeFlowId}
+        where id = #{id}
+          and status = #{fromStatus}
+          and deleted = 0
+    </update>
+
+    <update id="updatePaymentSnapshot">
+        update trading.trade_order
+        set payment_status = #{paymentStatus},
+            paid_amount = #{paidAmount},
+            paid_at = #{paidAt},
+            debit_flow_id = #{debitFlowId},
+            income_flow_id = #{incomeFlowId},
+            updated_at = #{updatedAt}
+        where id = #{id}
+          and deleted = 0
+    </update>
+
+    <update id="updateMeteringSnapshot">
+        update trading.trade_order
+        set actual_amount = #{actualAmount},
+            updated_at = #{updatedAt}
+        where id = #{id}
+          and deleted = 0
+    </update>
+
+    <update id="updateContractBindingSnapshot">
+        update trading.trade_order
+        set contract_id = #{contractId},
+            updated_at = #{updatedAt}
+        where id = #{id}
+          and deleted = 0
+          and (contract_id is null or contract_id = '')
+    </update>
+
+    <update id="bindContractSnapshot">
+        update trading.trade_order
+        set contract_id = #{contractId},
+            updated_at = #{updatedAt}
+        where id = #{id}
+          and deleted = 0
+    </update>
+
+    <update id="closeExpiredPeriodicFulfillmentOrders">
+        update trading.trade_order
+        set fulfillment_status = 1,
+            updated_at = #{updatedAt}
+        where pricing_model in ('MONTHLY')
+          and status = 'CONFIRMED'
+          and deleted = 0
+          and (fulfillment_status is null or fulfillment_status &lt;&gt; 1)
+          and fulfillment_expire_at is not null
+          and fulfillment_expire_at &lt;= #{updatedAt}
+    </update>
+
+    <update id="updateIdentitySnapshot">
+        update trading.trade_order
+        set buyer_user_identity_code = #{buyerUserIdentityCode},
+            buyer_subject_name = #{buyerSubjectName},
+            seller_user_identity_code = #{sellerUserIdentityCode},
+            seller_subject_name = #{sellerSubjectName},
+            updated_at = #{updatedAt}
+        where id = #{id}
+          and deleted = 0
+    </update>
+
+    <sql id="VisibilityFilters">
+        <if test="!isAdmin">
+            <choose>
+                <when test="query.orderRole == 'SALE'">
+                    and seller_id = #{userId}
+                </when>
+                <when test="query.orderRole == 'PURCHASE'">
+                    and buyer_id = #{userId}
+                </when>
+                <otherwise>
+                    and (buyer_id = #{userId} or seller_id = #{userId})
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <sql id="QueryFilters">
+        <if test="query.status != null and query.status != ''">
+            and status = #{query.status}
+        </if>
+        <if test="query.sourceType != null and query.sourceType != ''">
+            and source_type = #{query.sourceType}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and (
+                order_no like concat('%', #{query.keyword}, '%')
+                or order_title like concat('%', #{query.keyword}, '%')
+                or demand_no like concat('%', #{query.keyword}, '%')
+                or commodity_id like concat('%', #{query.keyword}, '%')
+                or commodity_name like concat('%', #{query.keyword}, '%')
+                or buyer_name like concat('%', #{query.keyword}, '%')
+                or seller_name like concat('%', #{query.keyword}, '%')
+            )
+        </if>
+    </sql>
+
+</mapper>

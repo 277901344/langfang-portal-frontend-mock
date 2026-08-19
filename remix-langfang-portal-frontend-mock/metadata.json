@@ -1,0 +1,8 @@
+{
+  "name": "Remix langfang-portal-frontend-mock",
+  "description": "Imported from GitHub: 277901344/langfang-portal-frontend-mock",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

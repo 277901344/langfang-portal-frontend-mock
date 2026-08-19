@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.demandcenter.DemandMapper">
+
+    <resultMap id="DemandEntityMap" type="com.zhzj.trading.model.demandcenter.DemandEntity">
+        <id column="id" property="id"/>
+        <result column="demand_no" property="demandNo"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="topic_category" property="topicCategory"/>
+        <result column="application_category" property="applicationCategory"/>
+        <result column="product_type" property="productType"/>
+        <result column="update_frequency" property="updateFrequency"/>
+        <result column="expected_fields_json" property="expectedFieldsJson"/>
+        <result column="usage_purpose" property="usagePurpose"/>
+        <result column="budget_type" property="budgetType"/>
+        <result column="budget_amount" property="budgetAmount"/>
+        <result column="expected_delivery" property="expectedDelivery"/>
+        <result column="deadline" property="deadline"/>
+        <result column="status" property="status"/>
+        <result column="publisher_id" property="publisherId"/>
+        <result column="publisher_name" property="publisherName"/>
+        <result column="matched_response_id" property="matchedResponseId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="response_count" property="responseCount"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="published_at" property="publishedAt"/>
+        <result column="closed_at" property="closedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id,
+        demand_no,
+        title,
+        description,
+        topic_category,
+        application_category,
+        product_type,
+        update_frequency,
+        expected_fields_json,
+        usage_purpose,
+        budget_type,
+        budget_amount,
+        expected_delivery,
+        deadline,
+        status,
+        publisher_id,
+        publisher_name,
+        matched_response_id,
+        order_id,
+        response_count,
+        view_count,
+        created_at,
+        updated_at,
+        published_at,
+        closed_at,
+        deleted
+    </sql>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.demandcenter.DemandEntity">
+        insert into trading.data_demand (
+            <include refid="BaseColumns"/>
+        ) values (
+            #{id},
+            #{demandNo},
+            #{title},
+            #{description},
+            #{topicCategory},
+            #{applicationCategory},
+            #{productType},
+            #{updateFrequency},
+            #{expectedFieldsJson},
+            #{usagePurpose},
+            #{budgetType},
+            #{budgetAmount},
+            #{expectedDelivery},
+            #{deadline},
+            #{status},
+            #{publisherId},
+            #{publisherName},
+            #{matchedResponseId},
+            #{orderId},
+            #{responseCount},
+            #{viewCount},
+            #{createdAt},
+            #{updatedAt},
+            #{publishedAt},
+            #{closedAt},
+            #{deleted}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.zhzj.trading.model.demandcenter.DemandEntity">
+        update trading.data_demand
+        set title = #{title},
+            description = #{description},
+            topic_category = #{topicCategory},
+            application_category = #{applicationCategory},
+            product_type = #{productType},
+            update_frequency = #{updateFrequency},
+            expected_fields_json = #{expectedFieldsJson},
+            usage_purpose = #{usagePurpose},
+            budget_type = #{budgetType},
+            budget_amount = #{budgetAmount},
+            expected_delivery = #{expectedDelivery},
+            deadline = #{deadline},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="DemandEntityMap">
+        select <include refid="BaseColumns"/>
+        from trading.data_demand
+        where id = #{id}
+          and deleted = 0
+    </select>
+
+    <select id="countByDemandNoPrefix" resultType="int">
+        select count(1)
+        from trading.data_demand
+        where demand_no like concat(#{prefix}, '%')
+    </select>
+
+    <select id="countList" resultType="int">
+        select count(1)
+        from trading.data_demand d
+        where deleted = 0
+        <include refid="ListFilters"/>
+    </select>
+
+    <select id="selectList" resultMap="DemandEntityMap">
+        select <include refid="BaseColumns"/>
+        from trading.data_demand d
+        where deleted = 0
+        <include refid="ListFilters"/>
+        order by created_at desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <sql id="ListFilters">
+        <choose>
+            <when test="query.scope == 'my'">
+                and publisher_id = #{publisherId}
+            </when>
+            <otherwise>
+                <if test="!isAdmin">
+                    and (
+                        status in
+                        <foreach collection="publicStatuses" item="status" open="(" separator="," close=")">
+                            #{status}
+                        </foreach>
+                        or publisher_id = #{publisherId}
+                    )
+                </if>
+            </otherwise>
+        </choose>
+        <if test="query.status != null and query.status != ''">
+            and status = #{query.status}
+        </if>
+        <choose>
+            <when test="query.demandType == 'responded'">
+                and coalesce(response_count, 0) > 0
+            </when>
+            <when test="query.demandType == 'canRespond'">
+                and status in ('PUBLISHED', 'RESPONDED')
+                and publisher_id != #{publisherId}
+                <if test="isAdmin">
+                    and 1 = 0
+                </if>
+                and not exists (
+                    select 1
+                    from trading.demand_response dr
+                    where dr.demand_id = d.id
+                      and dr.responder_id = #{publisherId}
+                      and dr.status in ('PENDING', 'ACCEPTED')
+                )
+            </when>
+        </choose>
+        <if test="query.topicCategory != null and query.topicCategory != ''">
+            and (
+                topic_category = #{query.topicCategory}
+                <if test="query.topicCategoryLabel != null and query.topicCategoryLabel != '' and query.topicCategoryLabel != query.topicCategory">
+                    or topic_category = #{query.topicCategoryLabel}
+                </if>
+            )
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and (
+                title like concat('%', #{query.keyword}, '%')
+                or description like concat('%', #{query.keyword}, '%')
+                or demand_no like concat('%', #{query.keyword}, '%')
+            )
+        </if>
+    </sql>
+
+    <update id="updateStatus">
+        update trading.data_demand
+        set status = #{status},
+            published_at = coalesce(#{publishedAt}, published_at),
+            closed_at = coalesce(#{closedAt}, closed_at),
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <update id="incrementResponseCount">
+        update trading.data_demand
+        set response_count = coalesce(response_count, 0) + 1,
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <update id="markMatched">
+        update trading.data_demand
+        set matched_response_id = #{matchedResponseId},
+            order_id = #{orderId},
+            status = #{status},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+</mapper>

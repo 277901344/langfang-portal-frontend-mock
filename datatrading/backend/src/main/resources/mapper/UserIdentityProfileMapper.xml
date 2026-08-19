@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.fund.UserIdentityProfileMapper">
+
+    <resultMap id="UserIdentityProfileMap" type="com.zhzj.trading.model.fund.UserIdentityProfile">
+        <result column="user_id" property="userId"/>
+        <result column="resolved_user_id" property="resolvedUserId"/>
+        <result column="user_identity_code" property="userIdentityCode"/>
+        <result column="subject_name" property="subjectName"/>
+    </resultMap>
+
+    <select id="selectByUserId" resultMap="UserIdentityProfileMap">
+        with base_user as (
+            select u.id as user_id,
+                   case
+                       when u.account_type = 3 then coalesce((
+                           select b.owner_user_id
+                           from sp.sp_subaccount_connector_binding b
+                           where b.subaccount_user_id = u.id
+                             and b.sync_status = 'SUCCESS'
+                           order by b.update_time desc, b.id desc
+                           limit 1
+                       ), u.id)
+                       else u.id
+                   end as resolved_user_id
+            from sp."user" u
+            where u.id = #{userId}
+            limit 1
+        )
+        select bu.user_id,
+               bu.resolved_user_id,
+               case
+                   when u.auth_type = 1 then ur.user_identity_code
+                   when u.auth_type = 2 then lo.legal_org_id
+                   when u.auth_type = 3 then op.operator_id
+                   else null
+               end as user_identity_code,
+               case
+                   when u.auth_type = 1 then ur.user_name
+                   when u.auth_type = 2 then lo.legal_org_name
+                   when u.auth_type = 3 then op.operator_name
+                   else null
+               end as subject_name
+        from base_user bu
+        join sp."user" u on u.id = bu.resolved_user_id
+        left join (
+            select uri.user_id,
+                   uri.user_identity_code,
+                   uri.user_name,
+                   row_number() over(partition by uri.user_id order by uri.create_time desc, uri.id desc) as rn
+            from sp.user_real_auth_info uri
+        ) ur on u.id = ur.user_id and ur.rn = 1 and u.auth_type = 1
+        left join (
+            select lai.user_id,
+                   lai.legal_org_id,
+                   lai.legal_org_name,
+                   row_number() over(partition by lai.user_id order by lai.create_time desc, lai.id desc) as rn
+            from sp.legal_org_auth_info lai
+        ) lo on u.id = lo.user_id and lo.rn = 1 and u.auth_type = 2
+        left join (
+            select loi.user_id,
+                   loi.operator_id,
+                   loi.operator_name,
+                   row_number() over(partition by loi.user_id order by loi.create_time desc, loi.id desc) as rn
+            from sp.legal_org_operator_info loi
+        ) op on u.id = op.user_id and op.rn = 1 and u.auth_type = 3
+        where u.auth_status = 1
+        limit 1
+    </select>
+
+</mapper>

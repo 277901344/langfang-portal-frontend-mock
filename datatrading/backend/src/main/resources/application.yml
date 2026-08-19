@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: trading-service
+  profiles:
+    active: local
+  cloud:
+    nacos:
+      discovery:
+        # 本地默认走 Nacos 3.2.2 的 18848，测试/生产可通过环境变量覆盖
+        server-addr: ${NACOS_SERVER_ADDR:192.170.13.32:18848}
+        # namespace 必须使用 namespaceId（UUID）；public 命名空间可用 public
+        namespace: ${NACOS_NAMESPACE:29566395-1c46-4333-a602-c354135fadbf}
+        group: ${NACOS_GROUP:local}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:SM4:670e06f32e394b9ee737715d38c87408399092b2bf7eb8d58668d05629a0173f113be48ad9d7d47ad067f3c730fd6bbd}
+      config:
+        server-addr: ${NACOS_CONFIG_SERVER_ADDR:${NACOS_SERVER_ADDR:192.170.13.32:18848}}
+        namespace: ${NACOS_CONFIG_NAMESPACE:${NACOS_NAMESPACE:29566395-1c46-4333-a602-c354135fadbf}}
+        group: ${NACOS_CONFIG_GROUP:${NACOS_GROUP:local}}
+        username: ${NACOS_CONFIG_USERNAME:${NACOS_USERNAME:nacos}}
+        password: ${NACOS_CONFIG_PASSWORD:${NACOS_PASSWORD:SM4:670e06f32e394b9ee737715d38c87408399092b2bf7eb8d58668d05629a0173f113be48ad9d7d47ad067f3c730fd6bbd}}
+        file-extension: yaml
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      write-dates-as-timestamps: false
+
+# MyBatis Plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.zhzj.trading.model
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# Shiro 会话配置
+shiro:
+  session:
+    timeout: 3600000
+    cookie-name: TRADING_SID
+    cookie-path: /
+
+# Trading 平台认证配置
+trading:
+  platform-auth:
+    base-url: ${TRADING_PLATFORM_AUTH_BASE_URL:http://sp-service}
+    captcha-path: ${TRADING_PLATFORM_AUTH_CAPTCHA_PATH:/auth/captcha}
+    login-path: ${TRADING_PLATFORM_AUTH_LOGIN_PATH:/auth/login}
+  marketplace:
+    catalog:
+      base-url: ${TRADING_MARKETPLACE_CATALOG_BASE_URL:${TRADING_PLATFORM_AUTH_BASE_URL:http://sp-service}}
+      search-path: ${TRADING_MARKETPLACE_CATALOG_SEARCH_PATH:/catalogService/search}
+      detail-path: ${TRADING_MARKETPLACE_CATALOG_DETAIL_PATH:/catalogService/detail}
+  fulfillment:
+    periodic-expire-close-enabled: ${TRADING_FULFILLMENT_PERIODIC_EXPIRE_CLOSE_ENABLED:true}
+    periodic-expire-close-delay-ms: ${TRADING_FULFILLMENT_PERIODIC_EXPIRE_CLOSE_DELAY_MS:3600000}
+  commodity:
+    expire-close-enabled: ${TRADING_COMMODITY_EXPIRE_CLOSE_ENABLED:true}
+    expire-close-delay-ms: ${TRADING_COMMODITY_EXPIRE_CLOSE_DELAY_MS:3600000}
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.zhzj.trading: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+
+oss:
+  client:
+    region: us-east-1
+    connection-timeout: 5000
+    socket-timeout: 300000
+    presigned-url-expire-minutes: 30
+    default-max-keys: 100
+    path-style-access: true

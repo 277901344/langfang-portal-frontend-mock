@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.contract.UserContractMapper">
+
+    <resultMap id="UserContractItemMap" type="com.zhzj.trading.model.contract.UserContractItem">
+        <id column="contract_id" property="contractId"/>
+        <result column="contract_name" property="contractName"/>
+        <result column="contract_abstract" property="contractAbstract"/>
+        <result column="contract_status" property="contractStatus"/>
+        <result column="activation_time" property="activationTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="issuer_id" property="issuerId"/>
+        <result column="issuer_entity_id" property="issuerEntityId"/>
+        <result column="partuser_id" property="partuserId"/>
+        <result column="partuser_entity_id" property="partuserEntityId"/>
+        <result column="sign_time" property="signTime"/>
+        <result column="expansion_item" property="expansionItem"/>
+        <result column="issuer_name" property="issuerName"/>
+        <result column="partuser_name" property="partuserName"/>
+    </resultMap>
+
+    <select id="selectUserContracts" resultMap="UserContractItemMap">
+        select contract_id,
+               contract_name,
+               contract_abstract,
+               contract_status,
+               activation_time,
+               end_time,
+               create_time,
+               issuer_id,
+               issuer_entity_id,
+               partuser_id,
+               partuser_entity_id,
+               sign_time,
+               expansion_item,
+               issuer_name,
+               partuser_name
+        from sp.contract
+        where (
+            (#{userIdentityCode} is not null and issuer_entity_id = #{userIdentityCode})
+            or (#{consumerSubjectPlatformUserId} is not null and consumer_subject_platform_user_id = #{consumerSubjectPlatformUserId})
+            or (
+                #{consumerPlatformUserId} is not null
+                and (
+                    #{consumerSubjectPlatformUserId} is null
+                    or #{consumerPlatformUserId} != #{consumerSubjectPlatformUserId}
+                )
+                and consumer_platform_user_id = #{consumerPlatformUserId}
+            )
+        )
+          and contract_status in ('03', '05')
+          and strategy is not null
+          and btrim(strategy) != ''
+          and strategy::json #>> '{subjectInfo,dataProductId}' = #{productId}
+        order by coalesce(sign_time, create_time) desc nulls last,
+                 contract_id desc
+    </select>
+</mapper>

@@ -1,0 +1,307 @@
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+  /* Prevent layout shift when Ant Design components open */
+  width: 100vw !important;
+}
+
+body,
+#root {
+  background-color: #f7f9fc;
+  /* Admin shell background */
+}
+
+.trading-admin-header {
+  background: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+}
+
+.trading-admin-shell {
+  background: #f7f9fc !important;
+}
+
+.trading-admin-sider {
+  background: transparent !important;
+}
+
+.trading-admin-sider-card {
+  height: 100%;
+  margin-right: 0;
+  background: #ffffff;
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.trading-admin-sider-menu {
+  height: 100%;
+}
+
+.trading-admin-content {
+  background: transparent !important;
+}
+
+.custom-sidenav-sider>.ant-layout-sider-children {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.custom-sidenav-sider .custom-scrollbar {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Sidebar Menu Customization */
+.custom-sidenav-menu .ant-menu-item,
+.custom-sidenav-menu .ant-menu-submenu-title {
+  margin-inline: 8px !important;
+  width: calc(100% - 16px) !important;
+  border-radius: 8px !important;
+}
+
+.custom-sidenav-menu .ant-menu-item-selected {
+  background-color: #eff6ff !important;
+  color: #1677ff !important;
+  border-radius: 8px !important;
+}
+
+.custom-sidenav-menu .ant-menu-item-selected .ant-menu-title-content,
+.custom-sidenav-menu .ant-menu-item-selected .anticon,
+.custom-sidenav-menu .ant-menu-submenu-selected > .ant-menu-submenu-title,
+.custom-sidenav-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-title-content,
+.custom-sidenav-menu .ant-menu-submenu-selected > .ant-menu-submenu-title .anticon {
+  color: #1677ff !important;
+}
+
+.custom-sidenav-menu .ant-menu-item,
+.custom-sidenav-menu .ant-menu-submenu-title {
+  height: 42px !important;
+  line-height: 42px !important;
+}
+
+.trading-top-nav {
+  border-bottom: none !important;
+  background: transparent !important;
+  line-height: 64px !important;
+}
+
+.trading-top-nav::after,
+.trading-top-nav.ant-menu-horizontal::after {
+  border-bottom: none !important;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item {
+  top: 0 !important;
+  margin-inline: 0 !important;
+  margin-block: 0 !important;
+  padding-inline: 18px !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  color: #1f2937 !important;
+  border-bottom: none !important;
+  border-radius: 0 !important;
+  line-height: 64px !important;
+  height: 64px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item::after,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item::after,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item-selected::after,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item-active::after {
+  border-bottom: none !important;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item:hover,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item:hover,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item-active,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item-active {
+  color: #1677ff !important;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item-selected,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item-selected {
+  color: #165dff !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item .ant-menu-title-content,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item .ant-menu-title-content {
+  position: relative;
+  display: inline-block;
+  line-height: 64px;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item .ant-menu-title-content::after,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item .ant-menu-title-content::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #165dff;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 240ms ease;
+}
+
+.trading-top-nav.ant-menu-horizontal > .ant-menu-item-selected .ant-menu-title-content::after,
+.trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item-selected .ant-menu-title-content::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trading-top-nav.ant-menu-horizontal > .ant-menu-item .ant-menu-title-content::after,
+  .trading-top-nav.ant-menu-horizontal > .ant-menu-overflow-item .ant-menu-title-content::after {
+    transition: none;
+  }
+}
+
+/* Vertical Guide Line for Submenu */
+.custom-sidenav-menu .ant-menu-sub.ant-menu-inline {
+  background: rgba(255, 255, 255, 0.04) !important;
+  position: relative;
+}
+
+.custom-sidenav-menu .ant-menu-sub.ant-menu-inline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 32px;
+  /* Adjusted keyline */
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  width: 1px;
+  z-index: 1;
+}
+
+/* Prevent layout jump when scrollbar appears/disappears */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* AntD Table Scrollbar */
+.ant-table-wrapper .ant-table-body,
+.ant-table-wrapper .ant-table-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar,
+.ant-table-wrapper .ant-table-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar-track,
+.ant-table-wrapper .ant-table-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ant-table-wrapper .ant-table-body::-webkit-scrollbar-thumb,
+.ant-table-wrapper .ant-table-content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+.ant-table-wrapper .ant-table-body:hover::-webkit-scrollbar-thumb,
+.ant-table-wrapper .ant-table-content:hover::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* ========================================================
+   Global UI Tokens (全局设计变量)
+   ======================================================== */
+:root {
+  --ui-base-height: 32px;
+  --ui-input-width: 200px;
+  --ui-select-width: 200px;
+  --ui-border-radius: 8px;
+  --ui-font-size: 14px;
+}
+
+.search-bar-input {
+  width: var(--custom-width, var(--ui-input-width)) !important;
+  height: 32px !important;
+
+  &::placeholder {
+    font-size: var(--ui-font-size) !important;
+  }
+}
+
+.search-bar-select {
+  width: var(--ui-input-width) !important;
+  height: 32px !important;
+
+  .ant-select-selector {
+    height: 32px !important;
+    align-items: center !important;
+  }
+}
+
+.search-bar-btn {
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: var(--ui-font-size) !important;
+}
+
+/* Make antd Spin wrappers inherit flex layout so children can use flex-1 + overflow */
+.flex.flex-col>.ant-spin-nested-loading,
+.flex.flex-col>.ant-spin-nested-loading>.ant-spin-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Space.Compact Search Alignment - Fix for Height Discrepancy */
+.ant-space-compact .ant-input.h-9 {
+  height: 36px !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.ant-space-compact .ant-btn.h-9 {
+  height: 36px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}

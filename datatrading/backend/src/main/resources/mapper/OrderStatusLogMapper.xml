@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.tradeorder.OrderStatusLogMapper">
+
+    <resultMap id="OrderStatusLogItemMap" type="com.zhzj.trading.model.tradeorder.OrderStatusLogItem">
+        <result column="from_status" property="fromStatus"/>
+        <result column="to_status" property="toStatus"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="reason" property="reason"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.tradeorder.OrderStatusLogEntity">
+        insert into trading.order_status_log (
+            order_id,
+            from_status,
+            to_status,
+            operator_id,
+            operator_name,
+            reason,
+            created_at
+        ) values (
+            #{orderId},
+            #{fromStatus},
+            #{toStatus},
+            #{operatorId},
+            #{operatorName},
+            #{reason},
+            #{createdAt}
+        )
+    </insert>
+
+    <select id="selectByOrderId" resultMap="OrderStatusLogItemMap">
+        select from_status,
+               to_status,
+               operator_id,
+               operator_name,
+               reason,
+               created_at
+        from trading.order_status_log
+        where order_id = #{orderId}
+        order by created_at asc, id asc
+    </select>
+
+</mapper>

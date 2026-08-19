@@ -1,0 +1,70 @@
+# 测试环境配置
+server:
+  port: ${SERVER_PORT:18191}
+  servlet:
+    context-path: /
+
+spring:
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}?group=test&refreshEnabled=true
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}?group=test&refreshEnabled=true
+  cloud:
+    nacos:
+      discovery:
+        # 测试环境默认走测试 Nacos，必要时通过环境变量覆盖
+        server-addr: ${NACOS_SERVER_ADDR:192.170.13.32:18848}
+        # namespace 必须使用 namespaceId（UUID）
+        namespace: ${NACOS_NAMESPACE:29566395-1c46-4333-a602-c354135fadbf}
+        group: ${NACOS_GROUP:test}
+      config:
+        server-addr: ${NACOS_CONFIG_SERVER_ADDR:${NACOS_SERVER_ADDR:192.170.13.32:18848}}
+        namespace: ${NACOS_CONFIG_NAMESPACE:${NACOS_NAMESPACE:29566395-1c46-4333-a602-c354135fadbf}}
+        group: ${NACOS_CONFIG_GROUP:${NACOS_GROUP:test}}
+        file-extension: yaml
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: org.postgresql.Driver
+    # trading 与 connector 共用数据库实例，独立 schema=trading
+    url: jdbc:postgresql://172.16.0.212:5432/dass2?currentSchema=trading&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    username: sde
+    password: SM4:d34f60a36af7293a57372b0e1647404a
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 监控统计配置
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 1000
+        wall:
+          enabled: true
+          config:
+            multi-statement-allow: true
+
+# 测试环境日志级别
+logging:
+  level:
+    root: INFO
+    com.zhzj.trading: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+    com.baomidou.mybatisplus.core.MybatisConfiguration: DEBUG
+
+oss:
+  client:
+    endpoint: http://172.16.0.73:19000/
+    access-key: myadmin
+    secret-key: SM4:9262fded7d84521864b00eb0944cd793
+    bucket: tds
+    path-style-access: true

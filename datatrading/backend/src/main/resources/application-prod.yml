@@ -1,0 +1,76 @@
+# 生产环境配置
+server:
+  port: ${SERVER_PORT:18187}
+  servlet:
+    context-path: /
+
+spring:
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}?group=prod&refreshEnabled=true
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}?group=prod&refreshEnabled=true
+  cloud:
+    nacos:
+      discovery:
+        # 生产环境通过生产 Nacos 服务发现与配置中心
+        server-addr: ${NACOS_SERVER_ADDR:10.24.220.180:18181}
+        # namespace 必须使用 namespaceId（UUID）
+        namespace: ${NACOS_NAMESPACE:114fcffb-bbc0-4fe1-b3f2-7c6c63844e72}
+        group: ${NACOS_GROUP:prod}
+      config:
+        server-addr: ${NACOS_CONFIG_SERVER_ADDR:${NACOS_SERVER_ADDR:10.24.220.180:18181}}
+        namespace: ${NACOS_CONFIG_NAMESPACE:${NACOS_NAMESPACE:114fcffb-bbc0-4fe1-b3f2-7c6c63844e72}}
+        group: ${NACOS_CONFIG_GROUP:${NACOS_GROUP:prod}}
+        file-extension: yaml
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.huawei.gaussdb.jdbc.Driver
+    # trading 与 connector 共用数据库实例，独立 schema=trading
+    url: jdbc:gaussdb://10.24.221.5:8000/connector?currentSchema=trading&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    username: sde
+    password: SM4:2abd6c379dbc1beaa23177fb6dbc0eb3b6047a8ea8e7e8dc943afc1f30482fef
+    druid:
+      initial-size: 10
+      min-idle: 10
+      max-active: 50
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 监控统计配置
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 1000
+        wall:
+          enabled: true
+          config:
+            multi-statement-allow: true
+      # 生产环境建议关闭 SQL 监控统计
+      stat-view-servlet:
+        enabled: false
+
+# 生产环境日志级别
+logging:
+  level:
+    root: INFO
+    com.zhzj.trading: INFO
+    com.baomidou.mybatisplus: WARN
+  file:
+    name: logs/trading-service.log
+    max-size: 100MB
+    max-history: 30
+
+oss:
+  client:
+    endpoint: http://obsv3.gw-beijing-01.bjcloud.pipechina.com.cn
+    access-key: Z22AVR8HIOYMR72DMOX4
+    secret-key: u4ob79eWmTvZKCKcLbu6Y20eeMHqTnk45sQ4i1Yo
+    bucket: zj-xbgd-kxsjkj-dmz-obs
+    path-style-access: false

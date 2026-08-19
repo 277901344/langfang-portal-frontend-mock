@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.commodity.DataCommodityDao">
+
+    <resultMap id="CommodityListItemMap" type="com.zhzj.trading.model.commodity.CommodityListItem">
+        <id column="commodity_id" property="commodityId"/>
+        <result column="user_id" property="userId"/>
+        <result column="commodity_name" property="commodityName"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="description" property="description"/>
+        <result column="commodity_type" property="commodityType"/>
+        <result column="pricing_model" property="pricingModel"/>
+        <result column="price" property="price"/>
+        <result column="discount" property="discount"/>
+        <result column="discount_price" property="discountPrice"/>
+        <result column="delivery_method" property="deliveryMethod"/>
+        <result column="expired_time" property="expiredTime"/>
+        <result column="status" property="status"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="selectCommodityPage" resultMap="CommodityListItemMap">
+        select c.commodity_id,
+               <choose>
+                   <when test="query.marketView != null and query.marketView">
+                       null
+                   </when>
+                   <otherwise>
+                       c.user_id
+                   </otherwise>
+               </choose> as user_id,
+               c.commodity_name,
+               c.cover_image,
+               c.description,
+               c.commodity_type,
+               c.pricing_model,
+               c.price,
+               c.discount,
+               c.discount_price,
+               c.delivery_method,
+               c.expired_time,
+               case
+                   when c.status = 4
+                       and c.expired_time is not null
+                       and c.expired_time &lt;= current_timestamp
+                       then 5
+                   else c.status
+               end as status,
+               r.product_id,
+               p.product_name,
+               c.connector_id,
+               c.created_at,
+               c.updated_at
+        from trading.data_commodity c
+        left join trading.data_product_commodity_rel r on r.commodity_id = c.commodity_id
+        left join sp.data_product p on p.product_id = r.product_id
+            and p.version_id = r.version_id
+            and p.deleted = 0
+        where c.deleted = 0
+        <include refid="CommodityVisibility"/>
+        <include refid="CommodityFilters"/>
+        order by c.created_at desc
+    </select>
+
+    <sql id="CommodityVisibility">
+        <choose>
+            <when test="query.marketView != null and query.marketView">
+                and c.status = 4
+                and (c.expired_time is null or c.expired_time &gt; current_timestamp)
+            </when>
+            <when test="!isAdmin">
+                and c.user_id = #{userId}
+            </when>
+        </choose>
+    </sql>
+
+    <sql id="CommodityFilters">
+        <choose>
+            <when test="query.marketView != null and query.marketView">
+                <!-- 市场模式跳过 admin/status in() 默认分支，状态在 visibility 已固定为已上架 -->
+            </when>
+            <when test="query.status != null and query.status == 4">
+                and c.status = 4
+                and (c.expired_time is null or c.expired_time &gt; current_timestamp)
+            </when>
+            <when test="query.status != null and query.status == 5">
+                and (
+                    c.status = 5
+                    or (
+                        c.status = 4
+                        and c.expired_time is not null
+                        and c.expired_time &lt;= current_timestamp
+                    )
+                )
+            </when>
+            <when test="query.status != null">
+                and c.status = #{query.status}
+                <if test="isAdmin and query.status == 0">
+                    <choose>
+                        <when test="canManageOwnCommodity">
+                            and c.user_id = #{userId}
+                        </when>
+                        <otherwise>
+                            and 1 = 0
+                        </otherwise>
+                    </choose>
+                </if>
+            </when>
+            <when test="isAdmin">
+                and (
+                    c.status in (1, 2, 3, 4, 5)
+                    <if test="canManageOwnCommodity">
+                        or (c.status = 0 and c.user_id = #{userId})
+                    </if>
+                )
+            </when>
+        </choose>
+        <choose>
+            <when test="query.marketView != null and query.marketView">
+                <if test="query.keyword != null and query.keyword != ''">
+                    and (
+                        c.commodity_name like concat('%', #{query.keyword}, '%')
+                        or c.commodity_id like concat('%', #{query.keyword}, '%')
+                        or p.product_name like concat('%', #{query.keyword}, '%')
+                        or r.product_id like concat('%', #{query.keyword}, '%')
+                    )
+                </if>
+            </when>
+            <otherwise>
+                <if test="query.keyword != null and query.keyword != ''">
+                    and (
+                        c.commodity_name like concat('%', #{query.keyword}, '%')
+                        or c.description like concat('%', #{query.keyword}, '%')
+                        or c.commodity_id like concat('%', #{query.keyword}, '%')
+                        or p.product_name like concat('%', #{query.keyword}, '%')
+                        or r.product_id like concat('%', #{query.keyword}, '%')
+                    )
+                </if>
+            </otherwise>
+        </choose>
+        <if test="query.commodityType != null and query.commodityType != ''">
+            and c.commodity_type = #{query.commodityType}
+        </if>
+        <if test="query.topicCategory != null and query.topicCategory != ''">
+            and p.topic_category = #{query.topicCategory}
+        </if>
+        <if test="query.applicationCategory != null and query.applicationCategory != ''">
+            and p.application_category = #{query.applicationCategory}
+        </if>
+        <if test="query.deliveryMethod != null">
+            and c.delivery_method = #{query.deliveryMethod}
+        </if>
+    </sql>
+
+    <select id="selectExpiredPublishedCommodityIds" resultType="java.lang.String">
+        select commodity_id
+        from trading.data_commodity
+        where status = 4
+          and deleted = 0
+          and expired_time is not null
+          and expired_time &lt;= #{updatedAt}
+    </select>
+
+    <update id="unpublishExpiredCommodity">
+        update trading.data_commodity
+        set status = 5,
+            updated_at = #{updatedAt}
+        where commodity_id = #{commodityId}
+          and status = 4
+          and deleted = 0
+          and expired_time is not null
+          and expired_time &lt;= #{updatedAt}
+    </update>
+
+</mapper>

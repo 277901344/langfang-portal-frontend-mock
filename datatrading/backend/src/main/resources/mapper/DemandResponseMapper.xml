@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.demandcenter.DemandResponseMapper">
+
+    <resultMap id="DemandResponseEntityMap" type="com.zhzj.trading.model.demandcenter.DemandResponseEntity">
+        <id column="id" property="id"/>
+        <result column="demand_id" property="demandId"/>
+        <result column="responder_id" property="responderId"/>
+        <result column="responder_name" property="responderName"/>
+        <result column="product_id" property="productId"/>
+        <result column="version_id" property="versionId"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="proposal" property="proposal"/>
+        <result column="quoted_price" property="quotedPrice"/>
+        <result column="pricing_model" property="pricingModel"/>
+        <result column="delivery_type" property="deliveryType"/>
+        <result column="status" property="status"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.demandcenter.DemandResponseEntity">
+        insert into trading.demand_response (
+            id,
+            demand_id,
+            responder_id,
+            responder_name,
+            product_id,
+            version_id,
+            connector_id,
+            proposal,
+            quoted_price,
+            pricing_model,
+            delivery_type,
+            status,
+            reject_reason,
+            created_at,
+            updated_at
+        ) values (
+            #{id},
+            #{demandId},
+            #{responderId},
+            #{responderName},
+            #{productId},
+            #{versionId},
+            #{connectorId},
+            #{proposal},
+            #{quotedPrice},
+            #{pricingModel},
+            #{deliveryType},
+            #{status},
+            #{rejectReason},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="DemandResponseEntityMap">
+        select *
+        from trading.demand_response
+        where id = #{id}
+    </select>
+
+    <select id="selectByDemandId" resultMap="DemandResponseEntityMap">
+        select *
+        from trading.demand_response
+        where demand_id = #{demandId}
+        order by created_at desc
+    </select>
+
+    <select id="countByDemandIdAndResponderId" resultType="int">
+        select count(1)
+        from trading.demand_response
+        where demand_id = #{demandId}
+          and responder_id = #{responderId}
+          and status in ('PENDING', 'ACCEPTED')
+    </select>
+
+    <update id="updateStatus">
+        update trading.demand_response
+        set status = #{status},
+            reject_reason = #{rejectReason},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <update id="rejectOtherPending">
+        update trading.demand_response
+        set status = 'REJECTED',
+            reject_reason = #{rejectReason},
+            updated_at = #{updatedAt}
+        where demand_id = #{demandId}
+          and id != #{excludeId}
+          and status = 'PENDING'
+    </update>
+
+</mapper>

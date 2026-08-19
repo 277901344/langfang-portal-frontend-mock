@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.fund.FundAccountMapper">
+
+    <resultMap id="FundAccountEntityMap" type="com.zhzj.trading.model.fund.FundAccountEntity">
+        <id column="id" property="id"/>
+        <result column="account_no" property="accountNo"/>
+        <result column="user_identity_code" property="userIdentityCode"/>
+        <result column="subject_name" property="subjectName"/>
+        <result column="account_role" property="accountRole"/>
+        <result column="available_balance" property="availableBalance"/>
+        <result column="total_recharge_amount" property="totalRechargeAmount"/>
+        <result column="total_debit_amount" property="totalDebitAmount"/>
+        <result column="total_income_amount" property="totalIncomeAmount"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <resultMap id="FundAccountItemMap" type="com.zhzj.trading.model.fund.FundAccountItem">
+        <id column="id" property="id"/>
+        <result column="account_no" property="accountNo"/>
+        <result column="user_identity_code" property="userIdentityCode"/>
+        <result column="subject_name" property="subjectName"/>
+        <result column="account_role" property="accountRole"/>
+        <result column="available_balance" property="availableBalance"/>
+        <result column="total_recharge_amount" property="totalRechargeAmount"/>
+        <result column="total_debit_amount" property="totalDebitAmount"/>
+        <result column="total_income_amount" property="totalIncomeAmount"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.fund.FundAccountEntity">
+        insert into trading.fund_account (
+            id,
+            account_no,
+            user_identity_code,
+            subject_name,
+            account_role,
+            available_balance,
+            total_recharge_amount,
+            total_debit_amount,
+            total_income_amount,
+            status,
+            created_at,
+            updated_at
+        ) values (
+            #{id},
+            #{accountNo},
+            #{userIdentityCode},
+            #{subjectName},
+            #{accountRole},
+            #{availableBalance},
+            #{totalRechargeAmount},
+            #{totalDebitAmount},
+            #{totalIncomeAmount},
+            #{status},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <select id="selectByIdentityAndRole" resultMap="FundAccountEntityMap">
+        select id,
+               account_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               available_balance,
+               total_recharge_amount,
+               total_debit_amount,
+               total_income_amount,
+               status,
+               created_at,
+               updated_at
+        from trading.fund_account
+        where user_identity_code = #{userIdentityCode}
+          and account_role = #{accountRole}
+        limit 1
+    </select>
+
+    <update id="updateBalanceSnapshot">
+        update trading.fund_account
+        set subject_name = #{subjectName},
+            status = #{status},
+            available_balance = #{availableBalance},
+            total_recharge_amount = #{totalRechargeAmount},
+            total_debit_amount = #{totalDebitAmount},
+            total_income_amount = #{totalIncomeAmount},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <select id="countAdminList" resultType="int">
+        select count(1)
+        from trading.fund_account
+        <where>
+            <include refid="AccountQueryFilters"/>
+        </where>
+    </select>
+
+    <select id="selectAdminList" resultMap="FundAccountItemMap">
+        select id,
+               account_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               available_balance,
+               total_recharge_amount,
+               total_debit_amount,
+               total_income_amount,
+               status
+        from trading.fund_account
+        <where>
+            <include refid="AccountQueryFilters"/>
+        </where>
+        order by updated_at desc, created_at desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="selectByIdentityCode" resultMap="FundAccountItemMap">
+        select id,
+               account_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               available_balance,
+               total_recharge_amount,
+               total_debit_amount,
+               total_income_amount,
+               status
+        from trading.fund_account
+        where user_identity_code = #{userIdentityCode}
+        order by account_role asc, updated_at desc
+    </select>
+
+    <sql id="AccountQueryFilters">
+        <if test="query.accountRole != null and query.accountRole != ''">
+            and account_role = #{query.accountRole}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and (
+                subject_name like concat('%', #{query.keyword}, '%')
+                or user_identity_code like concat('%', #{query.keyword}, '%')
+                or account_no like concat('%', #{query.keyword}, '%')
+            )
+        </if>
+    </sql>
+
+</mapper>

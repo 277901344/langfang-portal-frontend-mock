@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.fund.FundAccountFlowMapper">
+
+    <resultMap id="FundAccountFlowEntityMap" type="com.zhzj.trading.model.fund.FundAccountFlowEntity">
+        <id column="id" property="id"/>
+        <result column="flow_no" property="flowNo"/>
+        <result column="user_identity_code" property="userIdentityCode"/>
+        <result column="subject_name" property="subjectName"/>
+        <result column="account_role" property="accountRole"/>
+        <result column="flow_type" property="flowType"/>
+        <result column="amount" property="amount"/>
+        <result column="before_balance" property="beforeBalance"/>
+        <result column="after_balance" property="afterBalance"/>
+        <result column="order_id" property="orderId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="related_flow_id" property="relatedFlowId"/>
+        <result column="attachment_url" property="attachmentUrl"/>
+        <result column="remark" property="remark"/>
+        <result column="operator_id" property="operatorId"/>
+        <result column="operator_name" property="operatorName"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <resultMap id="FundFlowItemMap" type="com.zhzj.trading.model.fund.FundFlowItem" extends="FundAccountFlowEntityMap"/>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.fund.FundAccountFlowEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into trading.fund_account_flow (
+            flow_no,
+            user_identity_code,
+            subject_name,
+            account_role,
+            flow_type,
+            amount,
+            before_balance,
+            after_balance,
+            order_id,
+            order_no,
+            related_flow_id,
+            attachment_url,
+            remark,
+            operator_id,
+            operator_name,
+            created_at
+        ) values (
+            #{flowNo},
+            #{userIdentityCode},
+            #{subjectName},
+            #{accountRole},
+            #{flowType},
+            #{amount},
+            #{beforeBalance},
+            #{afterBalance},
+            #{orderId},
+            #{orderNo},
+            #{relatedFlowId},
+            #{attachmentUrl},
+            #{remark},
+            #{operatorId},
+            #{operatorName},
+            #{createdAt}
+        )
+    </insert>
+
+    <select id="selectById" resultMap="FundAccountFlowEntityMap">
+        select id,
+               flow_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               flow_type,
+               amount,
+               before_balance,
+               after_balance,
+               order_id,
+               order_no,
+               related_flow_id,
+               attachment_url,
+               remark,
+               operator_id,
+               operator_name,
+               created_at
+        from trading.fund_account_flow
+        where id = #{id}
+    </select>
+
+    <select id="selectIncomeFlowByRelatedFlowId" resultMap="FundAccountFlowEntityMap">
+        select id,
+               flow_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               flow_type,
+               amount,
+               before_balance,
+               after_balance,
+               order_id,
+               order_no,
+               related_flow_id,
+               attachment_url,
+               remark,
+               operator_id,
+               operator_name,
+               created_at
+        from trading.fund_account_flow
+        where related_flow_id = #{relatedFlowId}
+          and flow_type = 'INCOME'
+        limit 1
+    </select>
+
+    <select id="countByRelatedFlowId" resultType="int">
+        select count(1)
+        from trading.fund_account_flow
+        where related_flow_id = #{relatedFlowId}
+    </select>
+
+    <select id="countAdminList" resultType="int">
+        select count(1)
+        from trading.fund_account_flow
+        <where>
+            <include refid="FlowQueryFilters"/>
+        </where>
+    </select>
+
+    <select id="selectAdminList" resultMap="FundFlowItemMap">
+        select id,
+               flow_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               flow_type,
+               amount,
+               before_balance,
+               after_balance,
+               order_id,
+               order_no,
+               related_flow_id,
+               attachment_url,
+               remark,
+               operator_id,
+               operator_name,
+               created_at
+        from trading.fund_account_flow
+        <where>
+            <include refid="FlowQueryFilters"/>
+        </where>
+        order by created_at desc, id desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="countByIdentityCode" resultType="int">
+        select count(1)
+        from trading.fund_account_flow
+        where user_identity_code = #{userIdentityCode}
+        <include refid="FlowQueryFilters"/>
+    </select>
+
+    <select id="selectByIdentityCode" resultMap="FundFlowItemMap">
+        select id,
+               flow_no,
+               user_identity_code,
+               subject_name,
+               account_role,
+               flow_type,
+               amount,
+               before_balance,
+               after_balance,
+               order_id,
+               order_no,
+               related_flow_id,
+               attachment_url,
+               remark,
+               operator_id,
+               operator_name,
+               created_at
+        from trading.fund_account_flow
+        where user_identity_code = #{userIdentityCode}
+        <include refid="FlowQueryFilters"/>
+        order by created_at desc, id desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <sql id="FlowQueryFilters">
+        <if test="query.flowType != null and query.flowType != ''">
+            and flow_type = #{query.flowType}
+        </if>
+        <if test="query.accountRole != null and query.accountRole != ''">
+            and account_role = #{query.accountRole}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and (
+                subject_name like concat('%', #{query.keyword}, '%')
+                or user_identity_code like concat('%', #{query.keyword}, '%')
+                or flow_no like concat('%', #{query.keyword}, '%')
+                or order_no like concat('%', #{query.keyword}, '%')
+            )
+        </if>
+    </sql>
+
+</mapper>

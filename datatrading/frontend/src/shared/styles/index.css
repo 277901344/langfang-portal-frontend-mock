@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "antd/dist/reset.css";
+@import "./index.scss";
+
+@supports not (color: oklch(0 0 0)) {
+  .border-slate-100 {
+    border-color: #f1f5f9 !important;
+  }
+
+  .border-slate-100\/50 {
+    border-color: rgba(241, 245, 249, 0.5) !important;
+  }
+
+  .border-slate-200\/50 {
+    border-color: rgba(226, 232, 240, 0.5) !important;
+  }
+}

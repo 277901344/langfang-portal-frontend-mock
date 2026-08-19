@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhzj.trading.dao.billing.UsageRecordMapper">
+
+    <resultMap id="UsageRecordEntityMap" type="com.zhzj.trading.model.billing.UsageRecordEntity">
+        <id column="id" property="id"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="order_id" property="orderId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="consumer_id" property="consumerId"/>
+        <result column="consumer_user_identity_code" property="consumerUserIdentityCode"/>
+        <result column="provider_id" property="providerId"/>
+        <result column="provide_user_identity_code" property="provideUserIdentityCode"/>
+        <result column="usage_type" property="usageType"/>
+        <result column="usage_value" property="usageValue"/>
+        <result column="billable_usage" property="billableUsage"/>
+        <result column="amount" property="amount"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_status" property="sourceStatus"/>
+        <result column="recorded_at" property="recordedAt"/>
+        <result column="raw_payload" property="rawPayload"/>
+    </resultMap>
+
+    <resultMap id="BillingUsageItemMap" type="com.zhzj.trading.model.billing.BillingUsageItem">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="commodity_id" property="commodityId"/>
+        <result column="commodity_name" property="commodityName"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="usage_type" property="usageType"/>
+        <result column="usage_value" property="usageValue"/>
+        <result column="billable_usage" property="billableUsage"/>
+        <result column="amount" property="amount"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_status" property="sourceStatus"/>
+        <result column="recorded_at" property="recordedAt"/>
+    </resultMap>
+
+    <resultMap id="BillingOrderSummaryItemMap" type="com.zhzj.trading.model.billing.BillingOrderSummaryItem">
+        <id column="order_id" property="orderId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_title" property="orderTitle"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="contract_id" property="contractId"/>
+        <result column="connector_id" property="connectorId"/>
+        <result column="commodity_id" property="commodityId"/>
+        <result column="commodity_name" property="commodityName"/>
+        <result column="usage_count" property="usageCount"/>
+        <result column="total_usage_value" property="totalUsageValue"/>
+        <result column="total_billable_usage" property="totalBillableUsage"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="latest_recorded_at" property="latestRecordedAt"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.zhzj.trading.model.billing.UsageRecordEntity">
+        insert into trading.usage_record (
+            contract_id,
+            order_id,
+            transfer_id,
+            consumer_id,
+            consumer_user_identity_code,
+            provider_id,
+            provide_user_identity_code,
+            usage_type,
+            usage_value,
+            billable_usage,
+            amount,
+            source_type,
+            source_status,
+            recorded_at,
+            raw_payload
+        ) values (
+            #{contractId},
+            #{orderId},
+            #{transferId},
+            #{consumerId},
+            #{consumerUserIdentityCode},
+            #{providerId},
+            #{provideUserIdentityCode},
+            #{usageType},
+            #{usageValue},
+            #{billableUsage},
+            #{amount},
+            #{sourceType},
+            #{sourceStatus},
+            #{recordedAt},
+            #{rawPayload}
+        )
+    </insert>
+
+    <select id="selectByOrderIdAndTransferId" resultMap="UsageRecordEntityMap">
+        select id,
+               contract_id,
+               order_id,
+               transfer_id,
+               consumer_id,
+               consumer_user_identity_code,
+               provider_id,
+               provide_user_identity_code,
+               usage_type,
+               usage_value,
+               billable_usage,
+               amount,
+               source_type,
+               source_status,
+               recorded_at,
+               raw_payload
+        from trading.usage_record
+        where order_id = #{orderId}
+          and transfer_id = #{transferId}
+        order by id desc
+        limit 1
+    </select>
+
+    <select id="selectSummary" resultType="com.zhzj.trading.model.billing.BillingSummaryResponse">
+        select count(distinct u.order_id) as total_order_count,
+               coalesce(sum(u.usage_value), 0) as total_usage_value,
+               coalesce(sum(u.billable_usage), 0) as total_billable_usage,
+               coalesce(sum(u.amount), 0) as total_amount,
+               max(u.recorded_at) as latest_recorded_at
+        from trading.usage_record u
+        left join trading.trade_order o on o.id = u.order_id and o.deleted = 0
+        where 1 = 1
+        <include refid="VisibilityFilters"/>
+        <include refid="DateFilters"/>
+    </select>
+
+    <select id="selectStatistics" resultType="com.zhzj.trading.model.billing.BillingUsageStatisticPoint">
+        select date_trunc('day', u.recorded_at) as stat_date,
+               coalesce(sum(u.usage_value), 0) as total_usage_value,
+               coalesce(sum(u.billable_usage), 0) as total_billable_usage,
+               coalesce(sum(u.amount), 0) as total_amount
+        from trading.usage_record u
+        left join trading.trade_order o on o.id = u.order_id and o.deleted = 0
+        where 1 = 1
+        <include refid="VisibilityFilters"/>
+        <include refid="DateFilters"/>
+        group by date_trunc('day', u.recorded_at)
+        order by stat_date asc
+    </select>
+
+    <select id="countUsageList" resultType="int">
+        select count(1)
+        from trading.usage_record u
+        left join trading.trade_order o on o.id = u.order_id and o.deleted = 0
+        where 1 = 1
+        <include refid="VisibilityFilters"/>
+        <include refid="DateFilters"/>
+        <include refid="UsageListFilters"/>
+    </select>
+
+    <select id="selectUsageList" resultMap="BillingUsageItemMap">
+        select u.id,
+               u.order_id,
+               o.order_no,
+               u.contract_id,
+               o.commodity_id,
+               coalesce(o.commodity_name, o.commodity_id) as commodity_name,
+               o.connector_id,
+               u.transfer_id,
+               u.usage_type,
+               u.usage_value,
+               u.billable_usage,
+               u.amount,
+               u.source_type,
+               u.source_status,
+               u.recorded_at
+        from trading.usage_record u
+        left join trading.trade_order o on o.id = u.order_id and o.deleted = 0
+        where 1 = 1
+        <include refid="VisibilityFilters"/>
+        <include refid="DateFilters"/>
+        <include refid="UsageListFilters"/>
+        order by u.recorded_at desc, u.id desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="selectOrderSummaries" resultMap="BillingOrderSummaryItemMap">
+        select u.order_id,
+               o.order_no,
+               o.order_title,
+               o.status as order_status,
+               o.contract_id,
+               o.connector_id,
+               o.commodity_id,
+               o.commodity_name,
+               count(u.id) as usage_count,
+               coalesce(sum(u.usage_value), 0) as total_usage_value,
+               coalesce(sum(u.billable_usage), 0) as total_billable_usage,
+               coalesce(sum(u.amount), 0) as total_amount,
+               max(u.recorded_at) as latest_recorded_at
+        from trading.usage_record u
+        left join trading.trade_order o on o.id = u.order_id and o.deleted = 0
+        where 1 = 1
+        <include refid="VisibilityFilters"/>
+        <include refid="DateFilters"/>
+        <if test="query.orderId != null and query.orderId != ''">
+            and u.order_id = #{query.orderId}
+        </if>
+        group by u.order_id,
+                 o.order_no,
+                 o.order_title,
+                 o.status,
+                 o.contract_id,
+                 o.connector_id,
+                 o.commodity_id,
+                 o.commodity_name
+        order by latest_recorded_at desc
+        <if test="query.limit != null and query.limit > 0">
+            limit #{query.limit}
+        </if>
+    </select>
+
+    <sql id="VisibilityFilters">
+        <if test="!isAdmin">
+            and (u.consumer_id = #{userId} or u.provider_id = #{userId})
+        </if>
+    </sql>
+
+    <sql id="DateFilters">
+        <if test="query.startAt != null">
+            and u.recorded_at <![CDATA[ >= ]]> #{query.startAt}
+        </if>
+        <if test="query.endAt != null">
+            and u.recorded_at <![CDATA[ <= ]]> #{query.endAt}
+        </if>
+    </sql>
+
+    <sql id="UsageListFilters">
+        <if test="query.keyword != null and query.keyword != ''">
+            and (
+                o.order_no like concat('%', #{query.keyword}, '%')
+                or u.contract_id like concat('%', #{query.keyword}, '%')
+                or o.commodity_id like concat('%', #{query.keyword}, '%')
+                or o.commodity_name like concat('%', #{query.keyword}, '%')
+                or u.transfer_id like concat('%', #{query.keyword}, '%')
+            )
+        </if>
+        <if test="query.connectorId != null and query.connectorId != ''">
+            and o.connector_id like concat('%', #{query.connectorId}, '%')
+        </if>
+        <if test="query.usageType != null and query.usageType != ''">
+            and u.usage_type = #{query.usageType}
+        </if>
+    </sql>
+
+</mapper>

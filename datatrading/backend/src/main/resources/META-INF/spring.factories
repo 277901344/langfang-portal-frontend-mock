@@ -1,0 +1,3 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.zhzj.trading.config.NacosPasswordEnvironmentPostProcessor,\
+com.zhzj.trading.config.DatasourcePasswordEnvironmentPostProcessor
