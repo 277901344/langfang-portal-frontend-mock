@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient (Rich Deep Blue) -->
+    <linearGradient id="bgBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#073e8a" />
+      <stop offset="45%" stop-color="#084d9e" />
+      <stop offset="100%" stop-color="#073e8a" />
+    </linearGradient>
+
+    <!-- Inner Globe Gradient -->
+    <linearGradient id="globeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d5fb8" />
+      <stop offset="100%" stop-color="#08458f" />
+    </linearGradient>
+
+    <!-- Arc for Circular Top Text -->
+    <path id="topTextArc" d="M 40,100 A 55,55 0 0,1 160,100" fill="none" />
+    <!-- Arc for Circular Bottom Text -->
+    <path id="bottomTextArc" d="M 158,100 A 53,53 0 0,1 42,100" fill="none" />
+
+    <!-- Subtle Drop Shadow -->
+    <filter id="shadowFilter" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Deep Blue Canvas Background -->
+  <rect width="640" height="200" rx="8" fill="url(#bgBlueGrad)" />
+
+  <!-- LEFT EMBLEM GROUP (Center: 100, 100) -->
+  <g transform="translate(0, 0)">
+    <!-- Outer White Ring -->
+    <circle cx="100" cy="100" r="66" fill="#ffffff" filter="url(#shadowFilter)" />
+    <circle cx="100" cy="100" r="64" fill="none" stroke="#08458f" stroke-width="0.8" />
+    <circle cx="100" cy="100" r="47.5" fill="none" stroke="#08458f" stroke-width="0.8" />
+
+    <!-- Top Text on Arc: 河北省气象局 -->
+    <text font-family="'PingFang SC', 'Source Han Sans CN', 'Microsoft YaHei', 'SimHei', sans-serif" font-size="12" font-weight="900" fill="#083e8a" letter-spacing="3.2">
+      <textPath href="#topTextArc" startOffset="50%" text-anchor="middle">
+        河北省气象局
+      </textPath>
+    </text>
+
+    <!-- Bottom Text on Arc: HEBEI METEOROLOGICAL SERVICE -->
+    <text font-family="'Arial', 'Helvetica', sans-serif" font-size="5.6" font-weight="800" fill="#083e8a" letter-spacing="1">
+      <textPath href="#bottomTextArc" startOffset="50%" text-anchor="middle">
+        HEBEI METEOROLOGICAL SERVICE
+      </textPath>
+    </text>
+
+    <!-- Inner Blue Globe -->
+    <circle cx="100" cy="100" r="46.5" fill="url(#globeGrad)" />
+
+    <!-- Latitude and Longitude Grid Lines -->
+    <g stroke="#ffffff" stroke-width="0.9" opacity="0.75" fill="none">
+      <!-- Equator -->
+      <line x1="53.5" y1="100" x2="146.5" y2="100" />
+      <!-- Latitudes -->
+      <path d="M 58 86 Q 100 94 142 86" />
+      <path d="M 58 114 Q 100 106 142 114" />
+      <path d="M 70 74 Q 100 79 130 74" />
+      <path d="M 70 126 Q 100 121 130 126" />
+      <!-- Prime Meridian -->
+      <line x1="100" y1="53.5" x2="100" y2="146.5" />
+      <!-- Longitude Ellipses -->
+      <ellipse cx="100" cy="100" rx="20" ry="46.5" />
+      <ellipse cx="100" cy="100" rx="35" ry="46.5" />
+    </g>
+
+    <!-- Center Stylized CMA Weather Cloud Symbol -->
+    <g transform="translate(100, 100)" filter="url(#shadowFilter)">
+      <!-- Base Cloud Swirl Body (White) -->
+      <path d="
+        M -24 6
+        C -28 6, -31 1, -31 -5
+        C -31 -12, -25 -17, -18 -17
+        C -17 -26, -8 -32, 2 -32
+        C 13 -32, 21 -25, 22 -16
+        C 29 -15, 33 -9, 33 -2
+        C 33 5, 27 11, 20 11
+        C 14 11, 8 7, 5 4
+        C 1 12, -7 16, -14 16
+        C -18 16, -23 13, -25 9
+        Z"
+        fill="#ffffff"
+      />
+      <!-- Dynamic Sweeping Cloud Base Trail -->
+      <path d="
+        M -24 6
+        Q -4 20, 18 14
+        Q 29 11, 33 17
+        Q 19 21, -8 19
+        Z"
+        fill="#ffffff"
+      />
+      <!-- Inner Cloud Line Accents -->
+      <path d="
+        M -19 -4
+        C -19 -9, -14 -13, -8 -13
+        C -1 -13, 4 -9, 4 -3
+        C 4 3, -1 7, -7 7
+        C -11 7, -15 5, -16 2
+        M 1 -18
+        C 7 -18, 12 -14, 13 -8
+        C 13 -2, 9 2, 4 3
+        M -9 0
+        C -9 5, -5 9, 1 9
+        C 7 9, 14 6, 19 1
+        C 23 -3, 22 -8, 17 -10"
+        fill="none"
+        stroke="#073e8a"
+        stroke-width="1.8"
+        stroke-linecap="round"
+      />
+    </g>
+  </g>
+
+  <!-- RIGHT TEXT SECTION -->
+  <g transform="translate(186, 0)">
+    <!-- Line 1: 河北省气象局 -->
+    <text
+      x="0"
+      y="77"
+      fill="#ffffff"
+      font-family="'PingFang SC', 'Source Han Sans CN', 'Noto Sans SC', 'Microsoft YaHei', 'SimHei', sans-serif"
+      font-size="46"
+      font-weight="900"
+      letter-spacing="5"
+    >
+      河北省气象局
+    </text>
+
+    <!-- Line 2: HEBEI METEOROLOGICAL SERVICE -->
+    <text
+      x="2"
+      y="110"
+      fill="#ffffff"
+      font-family="'Helvetica Neue', 'Arial', 'Nimbus Sans', sans-serif"
+      font-size="14"
+      font-weight="700"
+      letter-spacing="5.6"
+      opacity="0.95"
+    >
+      HEBEI METEOROLOGICAL SERVICE
+    </text>
+
+    <!-- Line 3: 廊坊市气象局 (Calligraphy Script) -->
+    <text
+      x="100"
+      y="162"
+      fill="#ffffff"
+      font-family="'STKaiti', 'KaiTi', 'Xingkai SC', 'FZXingKai-S04S', 'WenQuanYi Zen Hei', 'Microsoft YaHei', cursive, sans-serif"
+      font-size="34"
+      font-weight="700"
+      letter-spacing="6"
+      font-style="italic"
+    >
+      廊坊市气象局
+    </text>
+  </g>
+</svg>

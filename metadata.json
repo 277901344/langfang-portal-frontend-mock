@@ -1,0 +1,8 @@
+{
+  "name": "京畿数港-廊坊城市可信数据空间",
+  "description": "京畿数港-廊坊城市可信数据空间，用于成果展示、可信融合网格与专题导览。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
